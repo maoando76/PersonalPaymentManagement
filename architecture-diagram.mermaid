@@ -1,0 +1,52 @@
+flowchart TB
+    subgraph "Data Collection Layer"
+        API[API Integration Module]
+        WS[Web Scraping Module]
+        subgraph "Financial Sources"
+            PP[PayPay]
+            SC[Suica]
+            JCB[JCB Credit Card]
+            RC[Rakuten Credit Card]
+            AP[au Pay]
+            YB[Yokohama Bank]
+        end
+        PP & SC & JCB & RC & AP & YB --> API
+        PP & SC & JCB & RC & AP & YB --> WS
+    end
+    
+    subgraph "Processing Layer"
+        DT[Data Transformation]
+        NM[Normalization Module]
+        API --> DT
+        WS --> DT
+        DT --> NM
+    end
+    
+    subgraph "Storage Layer"
+        S3[(AWS S3 Bucket)]
+        NM --> S3
+    end
+
+    subgraph "Scheduling & Automation"
+        LF[AWS Lambda Functions]
+        EC[EventBridge Scheduler]
+        SM[Secrets Manager]
+        EC --> LF
+        LF --> API
+        LF --> WS
+        SM --> LF
+    end
+    
+    subgraph "Visualization Layer"
+        QS[AWS QuickSight]
+        DS[QuickSight Datasets]
+        DB[QuickSight Dashboard]
+        S3 --> DS
+        DS --> DB
+        DB --> QS
+    end
+    
+    subgraph "Monitoring & Logging"
+        CW[CloudWatch]
+        LF --> CW
+    end
